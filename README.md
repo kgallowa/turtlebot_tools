@@ -1,2 +1,2 @@
 # turtlebot_tools
-Tools to help interface wiht Turtlebots
+Tools to help interface with Turtlebots
