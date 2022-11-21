@@ -7,7 +7,7 @@ if [ "$#" -lt 1 ]; then
     exit 1;
 fi
 
-echo "Switching networks"
+echo "Switching to internet-connected network"
 sudo rm /etc/netplan/50-cloud-init.yaml
 sudo cp ./netplan_internet/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
 sudo netplan apply
@@ -27,6 +27,7 @@ do
 done
 #######################################
 function finish {
+    echo "Switching back to local network"
     sudo rm /etc/netplan/50-cloud-init.yaml
     sudo cp ./netplan_local/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
     sudo netplan apply
