@@ -16,17 +16,17 @@ network:
       dhcp4: true
       dhcp6: true
       access-points:
-#        "Kevin iPhone":   
-#          password: test1234 
-        "CABH-WIFI":   
-          password:  berncrest
-        "FiOS-AGITJ":   
-          password:  commandergalloway605
-        "UCSD-PROTECTED":
-          auth:
-            key-management: eap
-            method: peap
-            identity: k1galloway   
-            password: Sabbatical1997!((&!
+        "Kevin iPhone":   
+          password: test1234 
+#        "CABH-WIFI":   
+#          password:  
+#        "FiOS-AGITJ":   
+#          password: 
+#        "UCSD-PROTECTED":
+#          auth:
+#            key-management: eap
+#            method: peap
+#            identity:    
+#            password: 
       
       
