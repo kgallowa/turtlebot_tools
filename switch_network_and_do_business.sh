@@ -8,7 +8,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 echo "Switching to internet-connected network"
-sudo rm /etc/netplan/50-cloud-init.yaml
+sudo mv /etc/netplan/50-cloud-init.yaml ./netplan_original/50-cloud-init.yaml
 sudo cp ./netplan_internet/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
 sudo netplan apply
 echo "Changed network; delaying a short time to make sure network change complete"
@@ -18,6 +18,9 @@ delay_time=20
 sleep $delay_time
 ######################################
 ####RUN DESIRED COMMMANDS TO RUN WHILE ON INTERNET ACCESS HERE
+# This will automatically run any commands included as command line arguments
+# for this script, but you can also hardcode commands at this location
+
 i=1
 for command in "$@"
 do
@@ -29,7 +32,7 @@ done
 function finish {
     echo "Switching back to local network"
     sudo rm /etc/netplan/50-cloud-init.yaml
-    sudo cp ./netplan_local/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
+    sudo mv ./netplan_original/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
     sudo netplan apply
     echo -en "\007"
 }

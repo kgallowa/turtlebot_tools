@@ -8,6 +8,28 @@ fi
 
 timeout_time=120
 
+while getopts 'sml:' OPTION; do
+  case "$OPTION" in
+    s)
+      echo "short timeout (1 minute) selected"
+      timeout_time=60
+      ;;
+    m)
+      echo "medium timeout (4 minutes) selected"
+      timeout_time=240
+      ;;
+    l)
+      echo "long timeout (10 minutes) selected"
+      timeout_time=600
+      ;;
+    ?)
+      echo "script usage: $(basename \$0) [-s] [-m] [-l]" >&2
+      exit 1
+      ;;
+  esac
+done
+
+
 timeout $timeout_time ./switch_network_and_do_business.sh "$@"
 
 status=$?
