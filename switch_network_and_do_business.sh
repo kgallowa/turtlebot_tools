@@ -8,7 +8,9 @@ if [ "$#" -lt 1 ]; then
 fi
 
 echo "Switching to internet-connected network"
-sudo mv /etc/netplan/50-cloud-init.yaml ./netplan_original/50-cloud-init.yaml
+#Move the original netplan config file to our current directory for temporary storage
+sudo mv /etc/netplan/50-cloud-init.yaml ./50-cloud-init.yaml
+#Copy our internet-configured netplan config file to the appropriate place in /etc/netplan
 sudo cp ./netplan_internet/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
 sudo netplan apply
 echo "Changed network; delaying a short time to make sure network change complete"
@@ -32,7 +34,8 @@ done
 function finish {
     echo "Switching back to local network"
     sudo rm /etc/netplan/50-cloud-init.yaml
-    sudo mv ./netplan_original/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
+    #Move the original netplan config file back to the correct place
+    sudo mv ./50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
     sudo netplan apply
     echo -en "\007"
 }
