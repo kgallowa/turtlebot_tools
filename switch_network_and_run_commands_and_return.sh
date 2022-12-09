@@ -1,13 +1,31 @@
 #!/bin/bash
 
+#Process timeout flag
+timeout_time=120
+while getopts "t:" opt; do
+  case ${opt} in
+    t)
+      timeout_time=${OPTARG}
+      ;;
+    :)
+      echo "$0: Must supply an argument to -$OPTARG." >&2
+      exit 1
+      ;;
+    ?)
+      echo "Invalid option: -${OPTARG}."
+      exit 2
+      ;;
+  esac
+done
+shift $(($OPTIND - 1));
+
 #echo $# arguments
 if [ "$#" -lt 1 ]; then
     echo "No arguments received"
-    echo "Use command line arguments to specify desired instructions to run over internet"+
+    echo "Use command line arguments to specify desired instructions to run over internet"
     exit 1;
 fi
 
-timeout_time=120
 
 ######################################
 #####SWITCH OUT NETPLAN CONFIG FILES TO CONNECT TO INTERNET
@@ -31,6 +49,7 @@ sleep $delay_time
 {
     sleep $timeout_time
     echo "Switching back to local network"
+    echo "Don't ctrl-C until after you see the We're back message"
     sudo rm /etc/netplan/50-cloud-init.yaml
 #    echo "Removed current netplan file"
     #Move the original netplan config file back to the correct place
@@ -69,6 +88,7 @@ then
     echo "Finished commands; terminating sleep timer"
     kill  $TIMEOUT_PID
     echo "Switching back to local network"
+    echo "Don't ctrl-C until after you see the We're back message"
     sudo rm /etc/netplan/50-cloud-init.yaml
     #Move the original netplan config file back to the correct place
     sudo mv ./50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
