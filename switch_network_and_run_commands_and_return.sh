@@ -7,7 +7,7 @@ if [ "$#" -lt 1 ]; then
     exit 1;
 fi
 
-timeout_time=35
+timeout_time=120
 
 ######################################
 #####SWITCH OUT NETPLAN CONFIG FILES TO CONNECT TO INTERNET
