@@ -26,6 +26,8 @@ if [ "$#" -lt 1 ]; then
     exit 1;
 fi
 
+##Create a log file and make the date the first line
+date > logfile.txt
 
 ######################################
 #####SWITCH OUT NETPLAN CONFIG FILES TO CONNECT TO INTERNET
@@ -33,17 +35,17 @@ echo "SWITCHING TO INTERNET-CONNECTED NETWORK"
 echo "See you in $timeout_time seconds or when the commands are finished, whichever comes first!"
 #Move the original netplan config file to our current directory for temporary storage
 sudo mv /etc/netplan/50-cloud-init.yaml ./50-cloud-init.yaml
-#echo "Moved the current netplan config file to this directory for safekeeping"
+echo "Moved the current netplan config file to this directory for safekeeping" >> logfile.txt
 #Copy our internet-configured netplan config file to the appropriate place in /etc/netplan
 sudo cp ./netplan_internet/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
-#echo "Copied the internet-configured netplan file to /etc /netplan"
+echo "Copied the internet-configured netplan file to /etc/netplan" >> logfile.txt
 sudo netplan apply
-echo "Changed network; delaying a short time to make sure network change complete"
+echo "Changed network; delaying a short time to make sure network change complete" 
 #Need to wait because in some cases it takes a little while to switch over networks
 #This could be a parameter
 delay_time=20
 sleep $delay_time
-
+ifconfig >> logfile.txt
 ######################################
 #####SET OUR FAILSAFE TIMER
 {
@@ -51,13 +53,13 @@ sleep $delay_time
     echo "Switching back to local network"
     echo "Don't ctrl-C until after you see the We're back message"
     sudo rm /etc/netplan/50-cloud-init.yaml
-#    echo "Removed current netplan file"
+    echo "Removed current netplan file" >> logfile.txt
     #Move the original netplan config file back to the correct place
     sudo mv ./50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
-#    echo "copied back the original netplan file"
+    echo "copied back the original netplan file" >> logfile.txt
     sudo netplan apply
     echo -en "\007"
-    echo "We're back!"
+    echo "We're back! You can check logfile.txt to see what happened while we were gone"
 } &
 TIMEOUT_PID=$!
 
@@ -69,8 +71,8 @@ TIMEOUT_PID=$!
 i=1
 for command in "$@"
 do
-    echo "Running command $i: $command";
-    $command
+    echo "Running command $i: $command" >> logfile.txt
+    $command >> logfile.txt
     i=$((i+1));
 done
 #######################################
@@ -94,7 +96,7 @@ then
     sudo mv ./50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
     sudo netplan apply
     echo -en "\007"
-    echo "We're back!"
+    echo "We're back! You can check logfile.txt to see what happened while we were gone"
 fi
 }
 trap finish EXIT
