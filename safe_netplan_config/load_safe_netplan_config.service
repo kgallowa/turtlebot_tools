@@ -1,0 +1,11 @@
+[Unit]
+Description=Load safe netplan config file
+Before=network-pre.target systemd-networkd.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /home/ubuntu/turtlebot_tools/safe_netplan_config/load_safe_netplan_config.sh
+
+[Install]
+WantedBy=network-pre.target systemd-networkd.service
+
