@@ -1,5 +1,14 @@
 #!/bin/bash
 
+if [[ -z "${TB_TOOLS_HOME}" ]]; then
+  echo "TB_TOOLS_HOME variable is undefined"
+  echo "Please run setup_for_network_switch.sh to set up"
+  echo "the environment, and then come back to run this script again"
+  exit 1
+fi
+
+tb_dir=$TB_TOOLS_HOME
+
 #Process timeout flag
 timeout_time=120
 while getopts "t:" opt; do
@@ -34,10 +43,10 @@ date > logfile.txt
 echo "SWITCHING TO INTERNET-CONNECTED NETWORK"
 echo "See you in $timeout_time seconds or when the commands are finished, whichever comes first!"
 #Move the original netplan config file to our current directory for temporary storage
-sudo mv /etc/netplan/50-cloud-init.yaml ./50-cloud-init.yaml
+sudo mv /etc/netplan/50-cloud-init.yaml ${tb_dir}/50-cloud-init.yaml
 echo "Moved the current netplan config file to this directory for safekeeping" >> logfile.txt
 #Copy our internet-configured netplan config file to the appropriate place in /etc/netplan
-sudo cp ./netplan_internet/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
+sudo cp ${tb_dir}/netplan_internet/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
 echo "Copied the internet-configured netplan file to /etc/netplan" >> logfile.txt
 sudo netplan apply
 echo "Changed network; delaying a short time to make sure network change complete" 
@@ -55,7 +64,7 @@ ifconfig >> logfile.txt
     sudo rm /etc/netplan/50-cloud-init.yaml
     echo "Removed current netplan file" >> logfile.txt
     #Move the original netplan config file back to the correct place
-    sudo mv ./50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
+    sudo mv ${tb_dir}/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
     echo "copied back the original netplan file" >> logfile.txt
     sudo netplan apply
     echo -en "\007"
@@ -93,7 +102,7 @@ then
     echo "Don't ctrl-C until after you see the We're back message"
     sudo rm /etc/netplan/50-cloud-init.yaml
     #Move the original netplan config file back to the correct place
-    sudo mv ./50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
+    sudo mv ${tb_dir}/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
     sudo netplan apply
     echo -en "\007"
     echo "We're back! You can check logfile.txt to see what happened while we were gone"
