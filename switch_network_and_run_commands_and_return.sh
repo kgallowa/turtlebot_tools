@@ -9,6 +9,17 @@ fi
 
 tb_dir=$TB_TOOLS_HOME
 
+diff ${HOME}/bin/switch_network_and_run_commands_and_return.sh  ${tb_dir}/switch_network_and_run_commands_and_return.sh > diff.txt
+if [ -s diff.txt ]; then
+  echo "The version of switch_network_and_run_commands_and_return.sh in your HOME/bin directory"
+  echo " is different than the original version in the TB_TOOLS_HOME directory. Please make sure"
+  echo " the version in the HOME/bin directory incorporates any desired edits, since this is"
+  echo " the version that will be run"
+  rm diff.txt
+  exit 1
+fi
+rm diff.txt
+
 #Process timeout flag
 timeout_time=120
 while getopts "t:" opt; do
@@ -36,7 +47,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 ##Create a log file and make the date the first line
-date > logfile.txt
+date > ${tb_dir}/logfile.txt
 
 ######################################
 #####SWITCH OUT NETPLAN CONFIG FILES TO CONNECT TO INTERNET
@@ -44,17 +55,17 @@ echo "SWITCHING TO INTERNET-CONNECTED NETWORK"
 echo "See you in $timeout_time seconds or when the commands are finished, whichever comes first!"
 #Move the original netplan config file to our current directory for temporary storage
 sudo mv /etc/netplan/50-cloud-init.yaml ${tb_dir}/50-cloud-init.yaml
-echo "Moved the current netplan config file to this directory for safekeeping" >> logfile.txt
+echo "Moved the current netplan config file to this directory for safekeeping" >> ${tb_dir}/logfile.txt
 #Copy our internet-configured netplan config file to the appropriate place in /etc/netplan
 sudo cp ${tb_dir}/netplan_internet/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
-echo "Copied the internet-configured netplan file to /etc/netplan" >> logfile.txt
+echo "Copied the internet-configured netplan file to /etc/netplan" >> ${tb_dir}/logfile.txt
 sudo netplan apply
 echo "Changed network; delaying a short time to make sure network change complete" 
 #Need to wait because in some cases it takes a little while to switch over networks
 #This could be a parameter
 delay_time=20
 sleep $delay_time
-ifconfig >> logfile.txt
+ifconfig >> ${tb_dir}/logfile.txt
 ######################################
 #####SET OUR FAILSAFE TIMER
 {
@@ -62,10 +73,10 @@ ifconfig >> logfile.txt
     echo "Switching back to local network"
     echo "Don't ctrl-C until after you see the We're back message"
     sudo rm /etc/netplan/50-cloud-init.yaml
-    echo "Removed current netplan file" >> logfile.txt
+    echo "Removed current netplan file" >> ${tb_dir}/logfile.txt
     #Move the original netplan config file back to the correct place
     sudo mv ${tb_dir}/50-cloud-init.yaml /etc/netplan/50-cloud-init.yaml
-    echo "copied back the original netplan file" >> logfile.txt
+    echo "copied back the original netplan file" >> ${tb_dir}/logfile.txt
     sudo netplan apply
     echo -en "\007"
     echo "We're back! You can check logfile.txt to see what happened while we were gone"
@@ -80,8 +91,8 @@ TIMEOUT_PID=$!
 i=1
 for command in "$@"
 do
-    echo "Running command $i: $command" >> logfile.txt
-    $command >> logfile.txt
+    echo "Running command $i: $command" >> ${tb_dir}/logfile.txt
+    $command >> ${tb_dir}/logfile.txt
     i=$((i+1));
 done
 #######################################
