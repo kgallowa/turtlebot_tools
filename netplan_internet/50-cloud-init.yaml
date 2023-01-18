@@ -16,12 +16,8 @@ network:
       dhcp4: true
       dhcp6: true
       access-points:
-        "Kevin iPhone":   
-          password: test1234 
-#        "CABH-WIFI":   
-#          password:  
-#        "FiOS-AGITJ":   
-#          password: 
+        "SSID for internet-connected network":   
+          password: "password" 
 #        "UCSD-PROTECTED":
 #          auth:
 #            key-management: eap
